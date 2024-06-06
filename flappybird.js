@@ -59,11 +59,26 @@ window.onload = function() {
 
     bottomPipeImg = new Image();
     bottomPipeImg.src = "./batangbawah.png";
-
+    // Detect if it's a mobile device
+    const isMobile = /iPhone|iPad|iPod|Android|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+    // Add event listeners based on device type
+    if (isMobile) {
+      document.addEventListener("touchstart", moveBirdOnTouch); // Touch for mobile
+    } else {
+      document.addEventListener("keydown", moveBird); // Keyboard for desktop
+    }
+  
     requestAnimationFrame(update);
     setInterval(placePipes, 1500); //every 1.5 seconds
     document.addEventListener("keydown", moveBird);
-}
+  };
+
+// window.onload = function() {
+   
+
+    
+// }
 
 function update() {
     requestAnimationFrame(update);
@@ -145,20 +160,29 @@ function placePipes() {
     pipeArray.push(bottomPipe);
 }
 
-function moveBird(e) {
-    if (e.code == "Space" || e.code == "ArrowUp" || e.code == "KeyX") {
-        //jump
-        velocityY = -6;
+function moveBirdOnTouch(e) {
+    // Prevent default touch behavior (e.g., scrolling)
+    e.preventDefault();
+  
+    // Trigger bird jump on touch
+    moveBird(e);
+  }
 
-        //reset game
-        if (gameOver) {
-            bird.y = birdY;
-            pipeArray = [];
-            score = 0;
-            gameOver = false;
-        }
+function moveBird(e) {
+    if (e.code === "Space" || e.type === "touchstart") {
+      // Jump logic
+      velocityY = -6;
+  
+      // Reset game on jump if game over
+      if (gameOver) {
+        bird.y = birdY;
+        pipeArray = [];
+        score = 0;
+        gameOver = false;
+      }
     }
-}
+  }
+  
 
 function detectCollision(a, b) {
     return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner
